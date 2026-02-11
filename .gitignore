@@ -76,3 +76,4 @@ Thumbs.db
 # docs/
 base-prompt.md
 .cursor/
+.agent/

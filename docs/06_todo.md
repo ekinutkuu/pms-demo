@@ -32,54 +32,54 @@
 ---
 
 ## 3. MongoDB Connection & Index Strategy
-- [ ] Mongoose connection with fail-fast logic
-- [ ] Enable transactions (session support)
-- [ ] Define base schema fields:
+- [x] Mongoose connection with fail-fast logic (`src/config/db.ts`)
+- [x] Enable transactions (session support)
+- [x] Define base schema fields:
   - account_id
   - createdAt / updatedAt
-- [ ] Centralize index definitions
+- [x] Centralize index definitions
 
 ---
 
 ## 4. Domain Models
 ### Account
-- [ ] Account schema
-- [ ] Status control (active / inactive)
+- [x] Account schema
+- [x] Status control (active / inactive)
 
 ### Unit
-- [ ] Unit belongs to Account
-- [ ] Enforce account ownership at query level
+- [x] Unit belongs to Account
+- [x] Enforce account ownership at query level
 
 ---
 
 ## 5. Reservation Model (Critical)
-- [ ] Reservation schema
+- [x] Reservation schema
   - account_id
   - unit_id
   - check_in
   - check_out
   - source
-- [ ] Compound index:
+- [x] Compound index:
   - account_id + unit_id + check_in + check_out
 - [ ] Schema-level date validation
 
 ---
 
 ## 6. AvailabilityBlock Model
-- [ ] AvailabilityBlock schema
+- [x] AvailabilityBlock schema
 - [ ] Validate `end_date > start_date`
-- [ ] Index:
+- [x] Index:
   - account_id + unit_id + start_date + end_date
 
 ---
 
 ## 7. WebhookEvent Model & Idempotency Flow
-- [ ] WebhookEvent schema
+- [x] WebhookEvent schema
   - event_id (unique)
   - account_id
   - type
   - status
-- [ ] Unique index on `event_id`
+- [x] Unique index on `event_id`
 - [ ] Idempotency flow:
   - Insert event → process → mark processed
 
