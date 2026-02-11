@@ -1,5 +1,6 @@
 import express from 'express';
 import type { Request, Response } from 'express';
+import { accountScope } from './middlewares/accountScope';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler';
 
 export function createApp() {
@@ -15,6 +16,10 @@ export function createApp() {
       timestamp: new Date().toISOString(),
     });
   });
+
+  // Tenant bazlı tüm endpoint'ler için account scope middleware'i.
+  // Health endpoint'i bu middleware'den önce tanımlandığı için accountId zorunluluğundan muaftır.
+  app.use(accountScope);
 
   // Buraya ileride diğer router'lar eklenecek (webhooks, units, reservations vb.)
 
