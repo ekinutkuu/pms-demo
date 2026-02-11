@@ -73,6 +73,6 @@ Thumbs.db
 # ===============================
 # Optional
 # ===============================
-docs/
+# docs/
 base-prompt.md
 .cursor/
