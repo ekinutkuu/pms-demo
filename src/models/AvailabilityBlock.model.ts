@@ -6,6 +6,7 @@ export interface IAvailabilityBlock extends Document {
     start_date: Date;
     end_date: Date;
     reason?: string;
+    deletedAt?: Date;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -25,6 +26,7 @@ const AvailabilityBlockSchema: Schema = new Schema({
         }
     },
     reason: { type: String },
+    deletedAt: { type: Date },
 }, {
     timestamps: true
 });

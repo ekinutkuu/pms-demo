@@ -1,0 +1,20 @@
+# Availability Schema Documentation
+
+About `availability.schema.ts`
+Bu dosya, müsaitlik bloğu oluşturma istekleri için Zod validasyon şemalarını içerir. `schemas/` dizininde bulunur.
+
+## Şemalar
+
+### `CreateAvailabilityBlockSchema`
+`POST /units/:unitId/availability` isteği için validasyon kuralları.
+
+- **Body**:
+  - `start_date` (string -> Date): ISO 8601 formatında olmalı.
+  - `end_date` (string -> Date): ISO 8601 formatında olmalı.
+  - `reason` (string, optional): Bloklama nedeni.
+- **Params**:
+  - `unitId` (string): Boş olamaz.
+
+- **Özel Kontroller (Refinements)**:
+  - `end_date > start_date`: Bitiş tarihi başlangıçtan sonra olmalı.
+  - `start_date >= now`: Başlangıç tarihi geçmişte olmamalı.

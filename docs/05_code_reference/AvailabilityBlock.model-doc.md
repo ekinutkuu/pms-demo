@@ -1,19 +1,26 @@
-# About `AvailabilityBlock.model.ts`
+# AvailabilityBlock Model Documentation
 
-Defines the `AvailabilityBlock` model, representing a period where a unit is unavailable (e.g., maintenance, manual hold).
+## About `AvailabilityBlock.model.ts`
+Bu dosya, bir `Unit` (birim) için belirli tarih aralıklarının rezervasyona kapatılmasını temsil eden Mongoose şemasını ve modelini içerir. `models/` katmanında yer alır.
 
-## Schema: `AvailabilityBlockSchema`
+## Veri Modeli: `AvailabilityBlock`
 
-*   **Fields**:
-    *   `account_id` (ObjectId, ref: 'Account', required): Tenant scope.
-    *   `unit_id` (ObjectId, ref: 'Unit', required): The unit being blocked.
-    *   `start_date` (Date, required): Start of the block.
-    *   `end_date` (Date, required): End of the block.
-    *   `reason` (String, optional): Reason for the block.
-*   **Indexes**:
-    *   `{ account_id: 1, unit_id: 1, start_date: 1, end_date: 1 }`: Supports overlap queries similar to reservations.
+### Alanlar (Fields)
+- `account_id` (ObjectId, required): Kaydın ait olduğu tenant/hesap. `Account` modeline referans verir.
+- `unit_id` (ObjectId, required): Bloğun ait olduğu birim. `Unit` modeline referans verir.
+- `start_date` (Date, required): Bloğun başlangıç tarihi ve saati.
+- `end_date` (Date, required): Bloğun bitiş tarihi ve saati.
+- `reason` (String, optional): Bloğun oluşturulma nedeni (örneğin "Bakım", "Temizlik").
+- `deletedAt` (Date, optional): Soft delete mekanizması için silinme tarihi.
+- `createdAt` / `updatedAt`: Otomatik zaman damgaları.
 
-## Usage
+### Validasyonlar
+- **Tarih Sırası**: `end_date` değeri `start_date` değerinden sonra olmalıdır. Bu validasyon Mongoose şema validatörü ile sağlanır.
 
-*   Blocks availability just like a reservation.
-*   Must be checked during reservation creation to prevent double booking.
+### İndeksler
+- **Overlap İndeksi**: `{ account_id: 1, unit_id: 1, start_date: 1, end_date: 1 }`
+  - Bu bileşik indeks, belirli bir birim ve tarih aralığındaki çakışmaları (overlap) sorgularken performansı optimize eder.
+
+### İlişkiler
+- **Account**: Her blok bir hesaba aittir.
+- **Unit**: Her blok bir birime aittir.

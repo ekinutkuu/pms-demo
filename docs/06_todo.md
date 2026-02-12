@@ -124,10 +124,10 @@
 ---
 
 ## 12. Availability Block Endpoint
-- [ ] `POST /units/:unitId/availability/close`
-- [ ] Validate account ownership
-- [ ] Check conflicts with future reservations
-- [ ] Insert block
+- [x] `POST /units/:unitId/availability`
+- [x] Validate account ownership
+- [x] Check conflicts with future reservations
+- [x] Insert block
 
 ---
 

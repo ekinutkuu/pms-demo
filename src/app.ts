@@ -3,6 +3,7 @@ import type { Request, Response } from 'express';
 import { accountScope } from './middlewares/accountScope';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler';
 import webhookRoutes from './routes/webhook.routes';
+import unitRoutes from './routes/unit.routes';
 
 export function createApp() {
   const app = express();
@@ -24,6 +25,7 @@ export function createApp() {
 
   // Routes
   app.use('/webhooks', webhookRoutes);
+  app.use('/units', unitRoutes);
 
 
   // Buraya ileride diğer router'lar eklenecek (webhooks, units, reservations vb.)
