@@ -1,12 +1,14 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
+import { WebhookStatus } from '../constants';
+
 export interface IWebhookEvent extends Document {
     account_id: mongoose.Types.ObjectId;
     event_id: string;
     event_type: string;
     payload: Record<string, any>;
     processed_at: Date;
-    status: 'processed' | 'failed';
+    status: WebhookStatus;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -17,7 +19,7 @@ const WebhookEventSchema: Schema = new Schema({
     event_type: { type: String, required: true },
     payload: { type: Object, required: true },
     processed_at: { type: Date, default: Date.now },
-    status: { type: String, enum: ['processed', 'failed'], default: 'processed' },
+    status: { type: String, enum: Object.values(WebhookStatus), default: WebhookStatus.PROCESSED },
 }, {
     timestamps: true
 });

@@ -38,6 +38,10 @@ export function errorHandler(
   if (err instanceof HttpError) {
     statusCode = err.statusCode;
     message = err.message;
+  } else if (err instanceof Error && 'statusCode' in err) {
+    // Handle BaseError and other custom errors with statusCode
+    statusCode = (err as any).statusCode;
+    message = err.message;
   }
 
   // Geliştirme ortamında hata detayını logla (ileride proper logger ile değiştirilebilir)

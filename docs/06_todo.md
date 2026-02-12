@@ -61,13 +61,13 @@
   - source
 - [x] Compound index:
   - account_id + unit_id + check_in + check_out
-- [ ] Schema-level date validation
+- [x] Schema-level date validation
 
 ---
 
 ## 6. AvailabilityBlock Model
 - [x] AvailabilityBlock schema
-- [ ] Validate `end_date > start_date`
+- [x] Validate `end_date > start_date`
 - [x] Index:
   - account_id + unit_id + start_date + end_date
 
@@ -80,42 +80,42 @@
   - type
   - status
 - [x] Unique index on `event_id`
-- [ ] Idempotency flow:
-  - Insert event → process → mark processed
+- [x] Idempotency flow:
+  - [x] Insert event → process → mark processed
 
 ---
 
 ## 8. Validation Layer
-- [ ] Payload validation (Zod / Joi)
-- [ ] Webhook payload schema
+- [x] Payload validation (Zod / Joi)
+- [x] Webhook payload schema
 - [ ] Availability payload schema
-- [ ] Unified 400 response format
+- [x] Unified 400 response format
 
 ---
 
 ## 9. Conflict Detection Logic
-- [ ] Reservation overlap logic
-- [ ] Block overlap logic
+- [x] Reservation overlap logic
+- [x] Block overlap logic
 - [ ] Deterministic query ordering
 - [ ] Unit tests for edge cases
 
 ---
 
 ## 10. Reservation Creation Service (Atomic)
-- [ ] Start MongoDB session
-- [ ] Check overlapping reservations
-- [ ] Check availability blocks
-- [ ] Create reservation
-- [ ] Commit transaction
+- [x] Start MongoDB session
+- [x] Check overlapping reservations
+- [x] Check availability blocks
+- [x] Create reservation
+- [x] Commit transaction
 
 ---
 
 ## 11. Booking Webhook Endpoint
-- [ ] `POST /webhooks/bookings`
-- [ ] Validate payload
-- [ ] Insert webhook event (idempotency)
-- [ ] Run reservation creation in same transaction
-- [ ] Response strategy:
+- [x] `POST /webhooks/bookings`
+- [x] Validate payload
+- [x] Insert webhook event (idempotency)
+- [x] Run reservation creation in same transaction
+- [x] Response strategy:
   - 201 → created
   - 200 → already processed
   - 409 → conflict
@@ -132,9 +132,9 @@
 ---
 
 ## 13. Error Handling
-- [ ] Domain error classes
-- [ ] Central error mapper
-- [ ] Consistent API error format
+- [x] Domain error classes
+- [x] Central error mapper
+- [x] Consistent API error format
 
 ---
 

@@ -14,7 +14,16 @@ const AvailabilityBlockSchema: Schema = new Schema({
     account_id: { type: Schema.Types.ObjectId, ref: 'Account', required: true },
     unit_id: { type: Schema.Types.ObjectId, ref: 'Unit', required: true },
     start_date: { type: Date, required: true },
-    end_date: { type: Date, required: true },
+    end_date: {
+        type: Date,
+        required: true,
+        validate: {
+            validator: function (this: any, value: Date) {
+                return this.start_date ? value > this.start_date : true;
+            },
+            message: 'End date must be after start date'
+        }
+    },
     reason: { type: String },
 }, {
     timestamps: true
