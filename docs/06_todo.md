@@ -139,9 +139,9 @@
 ---
 
 ## 14. Concurrency Strategy (MANDATORY)
-- [ ] Single transaction per booking event
-- [ ] Read → validate → write flow
-- [ ] README explanation:
+- [x] Single transaction per booking event
+- [x] Read → validate → write flow
+- [x] README explanation:
   - Why transactions
   - How double booking is prevented
 

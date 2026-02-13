@@ -1,5 +1,6 @@
 import mongoose, { ClientSession } from 'mongoose';
 import Reservation, { IReservation } from '../models/Reservation.model';
+import Unit from '../models/Unit.model';
 import AvailabilityBlock from '../models/AvailabilityBlock.model';
 import { ConflictError } from '../utils/errors';
 import { logger } from '../utils/logger';
@@ -18,6 +19,17 @@ export class ReservationService {
 
         if (!account_id || !unit_id || !start_date || !end_date) {
             throw new Error('Missing required reservation fields');
+        }
+
+        // 0. Resource Locking (Prevent Double Booking)
+        // Checks/Locks unit existence AND serializes requests for this unit
+        // This MUST be done before conflict check to ensure strict serialization
+        const unit = await Unit.findByIdAndUpdate(unit_id, {
+            $set: { updatedAt: new Date() }
+        }).session(session);
+
+        if (!unit) {
+            throw new Error('Unit not found');
         }
 
         // 1. Check for conflicts

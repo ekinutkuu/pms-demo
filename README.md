@@ -67,6 +67,14 @@ npm run dev
 ### Conflict Logic
 Two reservations overlap if: `(Start A < End B) AND (End A > Start B)`.
 
+### Concurrency Strategy (Pessimistic Locking)
+To prevent double bookings (overlapping reservations for the same unit), we use a **Pessimistic Locking** strategy via MongoDB Transactions.
+
+1.  **Resource Locking:** At the start of a reservation transaction, we perform a write operation (`findByIdAndUpdate`) on the parent `Unit` document. This acquires a write lock on the specific unit.
+2.  **Serialization:** Any concurrent requests trying to book the same unit must wait until the lock is released (transaction committed or aborted).
+3.  **Validation:** Once locked, we safely check for date conflicts knowing no other transaction can insert a reservation for this unit simultaneously.
+4.  **Atomicity:** The reservation creation and webhook processing occur within a single ACID transaction.
+
 ---
 
 ## 🧪 Testing
