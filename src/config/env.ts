@@ -6,6 +6,7 @@ interface EnvConfig {
   port: number;
   mongoUri: string;
   nodeEnv: NodeEnv;
+  webhookSecret: string;
 }
 
 function getEnvVar(key: string, defaultValue?: string): string {
@@ -20,6 +21,7 @@ const config: EnvConfig = {
   port: Number(getEnvVar('PORT', '3000')),
   mongoUri: getEnvVar('MONGO_URI', 'mongodb://localhost:27017/pms-task'),
   nodeEnv: (getEnvVar('NODE_ENV', 'development') as NodeEnv),
+  webhookSecret: getEnvVar('WEBHOOK_SECRET'),
 };
 
 export const env = config;

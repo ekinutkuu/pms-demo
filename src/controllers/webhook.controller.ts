@@ -12,18 +12,7 @@ export class WebhookController {
         next: NextFunction
     ): Promise<void> {
         try {
-            const accountIdStr = req.context?.accountId;
-            if (!accountIdStr) {
-                throw new ValidationError('Account context is missing');
-            }
-
-            if (!mongoose.Types.ObjectId.isValid(accountIdStr)) {
-                throw new ValidationError('Invalid account ID format');
-            }
-
-            const accountId = new mongoose.Types.ObjectId(accountIdStr);
-
-            // Validate payload with Zod
+            // 1. Zod Validation (Extract unit_id from payload)
             const validationResult = BookingWebhookSchema.safeParse(req.body);
 
             if (!validationResult.success) {
@@ -33,7 +22,25 @@ export class WebhookController {
             }
 
             const payload = validationResult.data;
+            const { unit_id } = payload;
 
+            // 2. Resolve Account Context (via Unit Lookup)
+            // Since webhooks are public/unauthenticated (except signature), we trust the unit_id
+            // to resolve the account context.
+            if (!mongoose.Types.ObjectId.isValid(unit_id)) {
+                throw new ValidationError('Invalid unit ID format');
+            }
+
+            const Unit = mongoose.model('Unit');
+            const unit = await Unit.findById(unit_id);
+
+            if (!unit) {
+                throw new ValidationError('Unit not found');
+            }
+
+            const accountId = unit.account_id; // Implicitly trusted
+
+            // 3. Process Webhook
             const result = await webhookService.processBookingWebhook(payload, accountId);
 
             if (result.status === 'CREATED') {

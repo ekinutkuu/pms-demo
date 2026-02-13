@@ -148,7 +148,7 @@
 ---
 
 ## 15. Security (Bonus)
-- [ ] Webhook signature validation
+- [X] Webhook signature validation
 - [ ] Rate limiting
 - [ ] Helmet
 - [ ] JWT auth (optional)

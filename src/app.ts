@@ -8,7 +8,12 @@ import unitRoutes from './routes/unit.routes';
 export function createApp() {
   const app = express();
 
-  app.use(express.json());
+  app.use(express.json({
+    limit: '1mb',
+    verify: (req: Request, res, buf) => {
+      req.rawBody = buf;
+    }
+  }));
 
   // Basit health check endpoint
   app.get('/health', (req: Request, res: Response) => {
@@ -19,12 +24,14 @@ export function createApp() {
     });
   });
 
+  // Webhook rotaları (Auth/AccountScope gerektirmez çünkü kendi imza kontrolleri var)
+  app.use('/webhooks', webhookRoutes);
+
   // Tenant bazlı tüm endpoint'ler için account scope middleware'i.
-  // Health endpoint'i bu middleware'den önce tanımlandığı için accountId zorunluluğundan muaftır.
+  // Health ve Webhook endpoint'leri bu middleware'den önce tanımlandığı için muaftır.
   app.use(accountScope);
 
   // Routes
-  app.use('/webhooks', webhookRoutes);
   app.use('/units', unitRoutes);
 
 
