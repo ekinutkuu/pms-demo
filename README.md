@@ -79,9 +79,15 @@ To prevent double bookings (overlapping reservations for the same unit), we use 
 
 ## 🧪 Testing
 
+### Unit Test (using jest)
+```bash
+npm test
+```
+
+### POST /webhooks/bookings
 You can test the `POST /webhooks/bookings` endpoint using the example in `skill/demo-agent`.
 
-### Example Curl
+#### Example Curl
 
 ```bash
 curl -X POST http://localhost:3000/webhooks/bookings \

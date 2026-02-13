@@ -18,3 +18,15 @@ export const CreateAvailabilityBlockSchema = z.object({
 });
 
 export type CreateAvailabilityBlockInput = z.infer<typeof CreateAvailabilityBlockSchema>;
+
+export const GetAvailabilitySchema = z.object({
+    query: z.object({
+        start_date: z.string().datetime().transform((str) => new Date(str)),
+        end_date: z.string().datetime().transform((str) => new Date(str)),
+    }).refine((data) => data.end_date > data.start_date, {
+        message: "End date must be after start date",
+        path: ["end_date"]
+    })
+});
+
+export type GetAvailabilityInput = z.infer<typeof GetAvailabilitySchema>;

@@ -88,7 +88,7 @@
 ## 8. Validation Layer
 - [x] Payload validation (Zod / Joi)
 - [x] Webhook payload schema
-- [ ] Availability payload schema
+- [x] Availability Payload Schema
 - [x] Unified 400 response format
 
 ---
@@ -96,8 +96,8 @@
 ## 9. Conflict Detection Logic
 - [x] Reservation overlap logic
 - [x] Block overlap logic
-- [ ] Deterministic query ordering
-- [ ] Unit tests for edge cases
+- [x] Deterministic query ordering
+- [x] Unit tests for edge cases
 
 ---
 

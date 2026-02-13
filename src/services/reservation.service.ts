@@ -62,7 +62,7 @@ export class ReservationService {
         };
 
         // Check existing reservations
-        const existingReservation = await Reservation.findOne(conflictQuery).session(session);
+        const existingReservation = await Reservation.findOne(conflictQuery).sort({ _id: 1 }).session(session);
         if (existingReservation) {
             throw new ConflictError(`Dates are not available (Reservation conflict: ${existingReservation._id})`);
         }
@@ -74,7 +74,7 @@ export class ReservationService {
             unit_id,
             start_date: { $lt: end },
             end_date: { $gt: start }
-        }).session(session);
+        }).sort({ _id: 1 }).session(session);
 
         if (existingBlock) {
             throw new ConflictError(`Dates are not available (Blocked: ${existingBlock._id})`);
