@@ -201,6 +201,11 @@ Proje `Jest` test framework'ü kullanılarak test edilmektedir.
   npx ts-node src/scripts/api-test.ts
   ```
 
+**Concurrency  Tests:**
+  ```bash
+  npx ts-node src/scripts/concurrency-test.ts
+  ```
+
 ## 📡 HTTP Durum Kodları
 
 API şu standart durum kodlarını kullanır:
