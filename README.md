@@ -201,9 +201,14 @@ Proje `Jest` test framework'ü kullanılarak test edilmektedir.
   npx ts-node src/scripts/api-test.ts
   ```
 
-**Concurrency  Tests:**
+**Concurrency Tests:**
   ```bash
   npx ts-node src/scripts/concurrency-test.ts
+  ```
+
+**Availability Tests:**
+  ```bash
+  npx ts-node --transpile-only scripts/test_availability_scenario.ts
   ```
 
 ## 📡 HTTP Durum Kodları
