@@ -3,6 +3,7 @@ import Reservation, { IReservation } from '../models/Reservation.model';
 import Unit from '../models/Unit.model';
 import AvailabilityBlock from '../models/AvailabilityBlock.model';
 import { ConflictError } from '../utils/errors';
+import { getOverlapQuery } from '../utils/dateUtils';
 import { logger } from '../utils/logger';
 import { ReservationStatus } from '../constants';
 
@@ -53,11 +54,12 @@ export class ReservationService {
         end: Date,
         session: ClientSession
     ): Promise<void> {
+        const overlapQuery = getOverlapQuery(start, end);
+
         const conflictQuery = {
             account_id,
             unit_id,
-            start_date: { $lt: end },
-            end_date: { $gt: start },
+            ...overlapQuery,
             status: { $ne: ReservationStatus.CANCELLED } // Ignore cancelled reservations
         };
 
@@ -72,8 +74,7 @@ export class ReservationService {
         const existingBlock = await AvailabilityBlock.findOne({
             account_id,
             unit_id,
-            start_date: { $lt: end },
-            end_date: { $gt: start }
+            ...overlapQuery
         }).sort({ _id: 1 }).session(session);
 
         if (existingBlock) {

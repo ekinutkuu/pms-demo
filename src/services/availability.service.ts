@@ -13,33 +13,33 @@ export const createBlock = async (
 ): Promise<IAvailabilityBlock> => {
     const session = await mongoose.startSession();
     try {
-        session.startTransaction();
+        return await session.withTransaction(async () => {
+            // 1. Verify Unit Ownership
+            const unit = await Unit.findOneAndUpdate(
+                { _id: unitId, account_id: accountId },
+                { $set: { updatedAt: new Date() } }
+            ).session(session);
+            if (!unit) {
+                throw new NotFoundError('Unit not found or does not belong to this account');
+            }
 
-        // 1. Verify Unit Ownership
-        const unit = await Unit.findOne({ _id: unitId, account_id: accountId }).session(session);
-        if (!unit) {
-            throw new NotFoundError('Unit not found or does not belong to this account');
-        }
+            const { start_date, end_date, source } = data;
 
-        const { start_date, end_date, source } = data;
+            // 2 & 3. Check for conflicts
+            await _checkConflicts(unitId, accountId, start_date, end_date, undefined, session);
 
-        // 2 & 3. Check for conflicts
-        await _checkConflicts(unitId, accountId, start_date, end_date, undefined, session);
+            // 4. Create the Block
+            const [block] = await AvailabilityBlock.create([{
+                account_id: accountId,
+                unit_id: unitId,
+                start_date,
+                end_date,
+                source
+            }], { session });
 
-        // 4. Create the Block
-        const [block] = await AvailabilityBlock.create([{
-            account_id: accountId,
-            unit_id: unitId,
-            start_date,
-            end_date,
-            source
-        }], { session });
-
-        await session.commitTransaction();
-        return block;
+            return block;
+        });
     } catch (error: any) {
-        await session.abortTransaction();
-
         // Fallback for standalone MongoDB (no transactions)
         if (error.message && error.message.includes('Transaction numbers are only allowed on a replica set')) {
             // Retry without session
