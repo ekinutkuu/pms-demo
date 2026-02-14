@@ -196,6 +196,11 @@ Proje `Jest` test framework'ü kullanılarak test edilmektedir.
     ```
 *   Testler hem birim (unit) hem de entegrasyon seviyesinde kontroller sağlar.
 
+**API Tests:**
+  ```bash
+  npx ts-node src/scripts/api-test.ts
+  ```
+
 ## 📡 HTTP Durum Kodları
 
 API şu standart durum kodlarını kullanır:
