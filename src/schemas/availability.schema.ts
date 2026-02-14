@@ -24,8 +24,8 @@ export type CreateAvailabilityBlockInput = z.infer<typeof CreateAvailabilityBloc
 
 export const GetAvailabilitySchema = z.object({
     query: z.object({
-        start_date: z.string().datetime().transform((str) => new Date(str)),
-        end_date: z.string().datetime().transform((str) => new Date(str)),
+        start_date: z.string().transform((str) => new Date(str)).refine((date) => !isNaN(date.getTime()), { message: "Invalid start date" }),
+        end_date: z.string().transform((str) => new Date(str)).refine((date) => !isNaN(date.getTime()), { message: "Invalid end date" }),
     }).refine((data) => data.end_date > data.start_date, {
         message: "End date must be after start date",
         path: ["end_date"]
