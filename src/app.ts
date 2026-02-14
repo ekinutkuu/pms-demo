@@ -15,7 +15,7 @@ export function createApp() {
     }
   }));
 
-  // Basit health check endpoint
+  // Health Check Endpoint
   app.get('/health', (req: Request, res: Response) => {
     res.status(200).json({
       status: 'ok',
@@ -24,20 +24,16 @@ export function createApp() {
     });
   });
 
-  // Webhook rotaları (Auth/AccountScope gerektirmez çünkü kendi imza kontrolleri var)
+  // Webhook Routes (No Auth/AccountScope required as they have their own signature verification)
   app.use('/webhooks', webhookRoutes);
 
-  // Tenant bazlı tüm endpoint'ler için account scope middleware'i.
-  // Health ve Webhook endpoint'leri bu middleware'den önce tanımlandığı için muaftır.
+  // Account scope middleware for all tenant-based endpoints.
   app.use(accountScope);
 
   // Routes
   app.use('/units', unitRoutes);
 
-
-  // Buraya ileride diğer router'lar eklenecek (webhooks, units, reservations vb.)
-
-  // 404 ve global hata yakalayıcılar en sonda
+  // 404 and global error handlers
   app.use(notFoundHandler);
   app.use(errorHandler);
 

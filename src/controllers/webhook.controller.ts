@@ -12,7 +12,7 @@ export class WebhookController {
         next: NextFunction
     ): Promise<void> {
         try {
-            // 1. Zod Validation (Nested payload yapısı)
+            // 1. Zod Validation
             const validationResult = BookingWebhookSchema.safeParse(req.body);
 
             if (!validationResult.success) {
@@ -24,7 +24,7 @@ export class WebhookController {
             const payload = validationResult.data;
             const { unit_id } = payload.data;
 
-            // 2. Resolve Account Context (via Unit Lookup)
+            // 2. Resolve Account Context
             if (!mongoose.Types.ObjectId.isValid(unit_id)) {
                 throw new ValidationError('Invalid unit ID format');
             }
@@ -36,13 +36,13 @@ export class WebhookController {
                 throw new ValidationError('Unit not found');
             }
 
-            // 3. Account ID Güvenlik Doğrulaması
-            // Payload'daki account_id ile Unit'in gerçek account_id'si eşleşmeli
+            // 3. Security Check
+            // Ensure payload account_id matches the unit's owner account_id
             if (payload.account_id !== unit.account_id.toString()) {
                 throw new ValidationError('Account ID does not match the unit owner');
             }
 
-            const accountId = unit.account_id; // Doğrulanmış account_id
+            const accountId = unit.account_id;
 
             // 4. Process Webhook
             const result = await webhookService.processBookingWebhook(payload, accountId);
@@ -53,7 +53,6 @@ export class WebhookController {
                     data: result.data
                 });
             } else {
-                // ALREADY_PROCESSED
                 res.status(200).json({
                     message: 'Event already processed'
                 });

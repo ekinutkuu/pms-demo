@@ -2,11 +2,6 @@ import { z } from 'zod';
 import { WebhookEventType, ListingSource } from '../constants';
 import { dateOrDatetime } from '../utils/dateUtils';
 
-/**
- * Nested webhook payload şeması.
- * Üst düzey: event_id, type, account_id
- * data: reservation_id, unit_id, check_in, check_out, source
- */
 export const BookingWebhookSchema = z.object({
     event_id: z.string().min(1, "Event ID is required"),
     type: z.nativeEnum(WebhookEventType),

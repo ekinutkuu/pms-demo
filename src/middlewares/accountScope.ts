@@ -2,12 +2,12 @@ import type { NextFunction, Request, Response } from 'express';
 import { HttpError } from './errorHandler';
 
 /**
- * accountScope middleware'i, her istek için tenant kapsamını (accountId) üretir.
+ * accountScope middleware extracts the tenant scope (accountId) for each request.
  *
- * NOT: Şu an için accountId doğrudan `x-account-id` header'ından okunmaktadır.
- * Gerçek bir üretim kurulumunda bu değer; JWT claim'i, webhook imza doğrulaması
- * veya provider → account mapping gibi daha güvenilir bir katmandan derive edilmelidir.
- * Header ham haliyle tek otorite olarak bırakılmamalıdır.
+ * NOTE: Currently, accountId is read directly from the `x-account-id` header.
+ * In a real production setup, this value should be derived from a more reliable source
+ * like a JWT claim, webhook signature verification, or provider -> account mapping.
+ * The header should not be the sole authority in its raw form.
  */
 export function accountScope(req: Request, _res: Response, next: NextFunction): void {
   const rawAccountId = req.header('x-account-id');

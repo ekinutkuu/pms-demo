@@ -15,10 +15,6 @@ export class WebhookService {
      * Processes a booking webhook event idempotently.
      * If the event ID has already been processed for this account, returns ALREADY_PROCESSED.
      * Otherwise, creates a reservation within the same transaction.
-     *
-     * Yeni payload yapısında:
-     * - event_id, type, account_id üst düzeyde
-     * - data altında: reservation_id, unit_id, check_in, check_out, source
      */
     public async processBookingWebhook(
         payload: BookingWebhookPayload,
@@ -30,13 +26,13 @@ export class WebhookService {
         try {
             const { event_id, type, data } = payload;
 
-            // 1. Idempotency Check (Try to insert event)
+            // 1. Idempotency Check
             try {
                 await WebhookEvent.create([{
                     account_id,
                     event_id,
                     event_type: type,
-                    payload, // Yeni tam payload kaydediliyor
+                    payload,
                     status: WebhookStatus.PROCESSED
                 }], { session }); // Must use array for transaction support in create()
             } catch (error: any) {
@@ -48,12 +44,8 @@ export class WebhookService {
                 throw error;
             }
 
-            // 2. Create Reservation (Delegated to Domain Service)
-            // Yeni payload → iç model mapping:
-            //   check_in  → start_date
-            //   check_out → end_date
-            //   source    → listing_source
-            //   unit_id   → unit_id (data altından)
+            // 2. Create Reservation
+            // Map payload data to reservation model
             const reservationData = {
                 account_id,
                 unit_id: new mongoose.Types.ObjectId(data.unit_id),

@@ -14,7 +14,4 @@ const UnitSchema: Schema = new Schema({
     timestamps: true
 });
 
-// Index for fetching all units of an account (as per specs) - already using `index: true`, no need to use this section
-// UnitSchema.index({ account_id: 1 });
-
 export default mongoose.model<IUnit>('Unit', UnitSchema);

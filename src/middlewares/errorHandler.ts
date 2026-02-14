@@ -1,9 +1,9 @@
 import type { NextFunction, Request, Response } from 'express';
 
-// İleride domain bazlı özel hata sınıfları (ValidationError, ConflictError vb.) buraya map edilecek.
-// Şimdilik genel bir HTTP hata dönüştürücü ile başlıyoruz.
+// TODO: Map domain-based custom error classes (ValidationError, ConflictError etc.) here in the future.
+// Starting with a generic HTTP error converter for now.
 
-// Basit extensible hata tipi
+// Simple extensible error type
 export class HttpError extends Error {
   statusCode: number;
 
@@ -14,16 +14,16 @@ export class HttpError extends Error {
   }
 }
 
-// 404 için middleware (route tanımlarından sonra kullanılacak)
+// Middleware for 404 (to be used after route definitions)
 export function notFoundHandler(req: Request, res: Response): void {
   res.status(404).json({
     success: false,
-    message: 'Kaynak bulunamadı',
+    message: 'Resource not found',
     path: req.originalUrl,
   });
 }
 
-// Global hata yakalayıcı
+// Global error handler
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function errorHandler(
   err: unknown,
@@ -33,7 +33,7 @@ export function errorHandler(
   _next: NextFunction,
 ): void {
   let statusCode = 500;
-  let message = 'Beklenmeyen bir hata oluştu';
+  let message = 'An unexpected error occurred';
 
   if (err instanceof HttpError) {
     statusCode = err.statusCode;
@@ -44,7 +44,7 @@ export function errorHandler(
     message = err.message;
   }
 
-  // Geliştirme ortamında hata detayını logla (ileride proper logger ile değiştirilebilir)
+  // Log error details in development environment (can be replaced with a proper logger later)
   // eslint-disable-next-line no-console
   console.error(err);
 
