@@ -9,6 +9,7 @@ export interface IReservation extends Document {
     end_date: Date;
     status: ReservationStatus;
     listing_source: string;
+    reservation_id?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -29,6 +30,7 @@ const ReservationSchema: Schema = new Schema({
     },
     status: { type: String, enum: Object.values(ReservationStatus), default: ReservationStatus.CONFIRMED },
     listing_source: { type: String, required: true },
+    reservation_id: { type: String },
 }, {
     timestamps: true
 });

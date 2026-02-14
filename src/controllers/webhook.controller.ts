@@ -12,7 +12,7 @@ export class WebhookController {
         next: NextFunction
     ): Promise<void> {
         try {
-            // 1. Zod Validation (Extract unit_id from payload)
+            // 1. Zod Validation (Nested payload yapısı)
             const validationResult = BookingWebhookSchema.safeParse(req.body);
 
             if (!validationResult.success) {
@@ -22,11 +22,9 @@ export class WebhookController {
             }
 
             const payload = validationResult.data;
-            const { unit_id } = payload;
+            const { unit_id } = payload.data;
 
             // 2. Resolve Account Context (via Unit Lookup)
-            // Since webhooks are public/unauthenticated (except signature), we trust the unit_id
-            // to resolve the account context.
             if (!mongoose.Types.ObjectId.isValid(unit_id)) {
                 throw new ValidationError('Invalid unit ID format');
             }
@@ -38,9 +36,15 @@ export class WebhookController {
                 throw new ValidationError('Unit not found');
             }
 
-            const accountId = unit.account_id; // Implicitly trusted
+            // 3. Account ID Güvenlik Doğrulaması
+            // Payload'daki account_id ile Unit'in gerçek account_id'si eşleşmeli
+            if (payload.account_id !== unit.account_id.toString()) {
+                throw new ValidationError('Account ID does not match the unit owner');
+            }
 
-            // 3. Process Webhook
+            const accountId = unit.account_id; // Doğrulanmış account_id
+
+            // 4. Process Webhook
             const result = await webhookService.processBookingWebhook(payload, accountId);
 
             if (result.status === 'CREATED') {

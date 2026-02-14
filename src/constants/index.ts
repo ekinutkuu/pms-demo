@@ -14,7 +14,7 @@ export enum AccountStatus {
 }
 
 export enum WebhookEventType {
-    BOOKING_CREATED = 'booking.created'
+    BOOKING_CREATED = 'booking_created'
 }
 
 export enum ListingSource {

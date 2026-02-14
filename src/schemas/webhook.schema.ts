@@ -1,15 +1,26 @@
 import { z } from 'zod';
-import { WebhookEventType } from '../constants';
+import { WebhookEventType, ListingSource } from '../constants';
+import { dateOrDatetime } from '../utils/dateUtils';
 
+/**
+ * Nested webhook payload şeması.
+ * Üst düzey: event_id, type, account_id
+ * data: reservation_id, unit_id, check_in, check_out, source
+ */
 export const BookingWebhookSchema = z.object({
     event_id: z.string().min(1, "Event ID is required"),
-    event_type: z.string().default(WebhookEventType.BOOKING_CREATED),
-    start_date: z.string().datetime({ message: "Invalid start_date format (ISO 8601 required)" }).transform(str => new Date(str)),
-    end_date: z.string().datetime({ message: "Invalid end_date format (ISO 8601 required)" }).transform(str => new Date(str)),
-    unit_id: z.string().min(1, "Unit ID is required"),
-    listing_source: z.string().optional(),
-    // Allow other fields to pass through (passthrough) or strip them (strict)
-    // For webhooks, untyped extra fields might be common, so passthrough is safer unless we want strict validation.
-}).passthrough();
+    type: z.nativeEnum(WebhookEventType),
+    account_id: z.string().min(1, "Account ID is required"),
+    data: z.object({
+        reservation_id: z.string().min(1, "Reservation ID is required"),
+        unit_id: z.string().min(1, "Unit ID is required"),
+        check_in: dateOrDatetime('check_in'),
+        check_out: dateOrDatetime('check_out'),
+        source: z.nativeEnum(ListingSource).optional().default(ListingSource.DIRECT),
+    }).strict().refine(
+        data => data.check_out > data.check_in,
+        { message: "check_out must be after check_in", path: ["check_out"] }
+    ),
+}).strict();
 
 export type BookingWebhookPayload = z.infer<typeof BookingWebhookSchema>;

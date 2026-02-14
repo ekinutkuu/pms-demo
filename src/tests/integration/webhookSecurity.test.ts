@@ -40,10 +40,15 @@ describe('Webhook Security Integration Tests', () => {
 
     const validPayload = {
         event_id: "evt_test_123",
-        unit_id: new mongoose.Types.ObjectId().toString(), // valid mongo id
-        guest: { name: "Test Guest" },
-        start_date: "2024-01-01T12:00:00Z",
-        end_date: "2024-01-05T12:00:00Z"
+        type: "booking_created",
+        account_id: "acc_test_123",
+        data: {
+            reservation_id: "res_test_123",
+            unit_id: new mongoose.Types.ObjectId().toString(),
+            check_in: "2024-01-01T12:00:00Z",
+            check_out: "2024-01-05T12:00:00Z",
+            source: "airbnb"
+        }
     };
 
     it('should return 400 (Unit not found) for Valid Signature and Timestamp', async () => {
@@ -143,7 +148,13 @@ describe('Webhook Security Integration Tests', () => {
     });
 
     it('should handle Unicode characters in body', async () => {
-        const unicodePayload = { ...validPayload, guest: { name: "Guest 🚀 İğüşöç" } };
+        const unicodePayload = {
+            ...validPayload,
+            data: {
+                ...validPayload.data,
+                reservation_id: "res_unicode_🚀",
+            }
+        };
         const timestamp = Date.now();
         const bodyString = JSON.stringify(unicodePayload);
         const signature = generateSignature(timestamp, bodyString);
@@ -156,5 +167,143 @@ describe('Webhook Security Integration Tests', () => {
             .send(bodyString);
 
         expect(res.status).toBe(400); // Should pass signature check
+    });
+
+    it('should return 400 for mismatched account_id', async () => {
+        // Unit oluştur
+        const Unit = mongoose.model('Unit');
+        const accountId = new mongoose.Types.ObjectId();
+        const unit = await Unit.create({ account_id: accountId, name: 'Test Unit' });
+
+        // Farklı account_id ile payload gönder
+        const mismatchPayload = {
+            ...validPayload,
+            account_id: new mongoose.Types.ObjectId().toString(), // Farklı account_id
+            data: {
+                ...validPayload.data,
+                unit_id: unit._id.toString(),
+            }
+        };
+
+        const timestamp = Date.now();
+        const bodyString = JSON.stringify(mismatchPayload);
+        const signature = generateSignature(timestamp, bodyString);
+
+        const res = await request(app)
+            .post('/webhooks/bookings')
+            .set('x-webhook-timestamp', timestamp.toString())
+            .set('x-webhook-signature', signature)
+            .set('Content-Type', 'application/json')
+            .send(bodyString);
+
+        expect(res.status).toBe(400);
+        expect(res.body.message).toMatch(/Account ID does not match/i);
+
+        // Cleanup
+        await Unit.deleteOne({ _id: unit._id });
+    });
+
+    it('should pass account_id validation when account_id matches unit owner', async () => {
+        // Unit oluştur
+        const Unit = mongoose.model('Unit');
+        const accountId = new mongoose.Types.ObjectId();
+        const unit = await Unit.create({ account_id: accountId, name: 'Test Unit Match' });
+
+        // Doğru account_id ile payload gönder
+        const matchPayload = {
+            ...validPayload,
+            account_id: accountId.toString(), // Eşleşen account_id
+            data: {
+                ...validPayload.data,
+                unit_id: unit._id.toString(),
+            }
+        };
+
+        const timestamp = Date.now();
+        const bodyString = JSON.stringify(matchPayload);
+        const signature = generateSignature(timestamp, bodyString);
+
+        const res = await request(app)
+            .post('/webhooks/bookings')
+            .set('x-webhook-timestamp', timestamp.toString())
+            .set('x-webhook-signature', signature)
+            .set('Content-Type', 'application/json')
+            .send(bodyString);
+
+        // Account_id doğrulamasını geçtiğini kanıtlamak için:
+        // "Account ID does not match" hatası ALINMAMALI
+        // (MongoMemoryServer replica set olmadığı için transaction hata verebilir,
+        //  ama güvenlik doğrulaması geçilmiş olacak)
+        expect(res.body.message).not.toMatch(/Account ID does not match/i);
+
+        // Cleanup
+        await Unit.deleteOne({ _id: unit._id });
+    });
+
+    it('should return 400 for invalid type value', async () => {
+        const invalidTypePayload = {
+            ...validPayload,
+            type: "booking_cancelled", // Geçersiz event type
+        };
+
+        const timestamp = Date.now();
+        const bodyString = JSON.stringify(invalidTypePayload);
+        const signature = generateSignature(timestamp, bodyString);
+
+        const res = await request(app)
+            .post('/webhooks/bookings')
+            .set('x-webhook-timestamp', timestamp.toString())
+            .set('x-webhook-signature', signature)
+            .set('Content-Type', 'application/json')
+            .send(bodyString);
+
+        expect(res.status).toBe(400);
+    });
+
+    it('should return 400 for unknown extra fields (strict mode)', async () => {
+        const extraFieldsPayload = {
+            ...validPayload,
+            admin: true, // Bilinmeyen alan
+        };
+
+        const timestamp = Date.now();
+        const bodyString = JSON.stringify(extraFieldsPayload);
+        const signature = generateSignature(timestamp, bodyString);
+
+        const res = await request(app)
+            .post('/webhooks/bookings')
+            .set('x-webhook-timestamp', timestamp.toString())
+            .set('x-webhook-signature', signature)
+            .set('Content-Type', 'application/json')
+            .send(bodyString);
+
+        expect(res.status).toBe(400);
+    });
+
+    it('should accept date-only format for check_in/check_out', async () => {
+        const dateOnlyPayload = {
+            ...validPayload,
+            data: {
+                ...validPayload.data,
+                check_in: "2024-01-01",
+                check_out: "2024-01-05",
+            }
+        };
+
+        const timestamp = Date.now();
+        const bodyString = JSON.stringify(dateOnlyPayload);
+        const signature = generateSignature(timestamp, bodyString);
+
+        const res = await request(app)
+            .post('/webhooks/bookings')
+            .set('x-webhook-timestamp', timestamp.toString())
+            .set('x-webhook-signature', signature)
+            .set('Content-Type', 'application/json')
+            .send(bodyString);
+
+        // Schema date formatını kabul etmeli, 400 dönmemeli
+        // Unit bulunamayacağı için 400 dönecek ama "Unit not found" sebebiyle, tarih yüzünden değil
+        expect(res.status).toBe(400);
+        expect(res.body.message).toMatch(/Unit not found|Invalid unit/i);
     });
 });
