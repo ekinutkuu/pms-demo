@@ -29,6 +29,9 @@ export const GetAvailabilitySchema = z.object({
     }).refine((data) => data.end_date > data.start_date, {
         message: "End date must be after start date",
         path: ["end_date"]
+    }),
+    params: z.object({
+        unitId: z.string().min(1, "Unit ID is required"),
     })
 });
 
