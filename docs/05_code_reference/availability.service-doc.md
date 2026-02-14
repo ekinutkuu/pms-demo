@@ -15,7 +15,7 @@ Belirtilen birim ve tarih aralığı için yeni bir müsaitlik bloğu oluşturur
   - `data` (CreateAvailabilityBlockInput['body']):
     - `start_date` (Date): Başlangıç.
     - `end_date` (Date): Bitiş.
-    - `reason` (string, optional): Bloklama nedeni.
+    - `source` (string, optional): Bloklama kaynağı.
 
 - **Validasyonlar & Kontroller**:
   1. **Unit Ownership**: Birimin ilgili `accountId`'ye ait olup olmadığı kontrol edilir.

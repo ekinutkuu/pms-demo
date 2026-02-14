@@ -5,7 +5,7 @@ export interface IAvailabilityBlock extends Document {
     unit_id: mongoose.Types.ObjectId;
     start_date: Date;
     end_date: Date;
-    reason?: string;
+    source?: string;
     deletedAt?: Date;
     createdAt: Date;
     updatedAt: Date;
@@ -25,7 +25,7 @@ const AvailabilityBlockSchema: Schema = new Schema({
             message: 'End date must be after start date'
         }
     },
-    reason: { type: String },
+    source: { type: String },
     deletedAt: { type: Date },
 }, {
     timestamps: true

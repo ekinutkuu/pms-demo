@@ -22,3 +22,9 @@ export enum ListingSource {
     AIRBNB = 'airbnb',
     BOOKING_COM = 'booking.com',
 }
+
+export enum AvailabilityBlockSource {
+    OWNER_BLOCKED = 'ownerBlocked',
+    MAINTENANCE = 'maintenance',
+    RENOVATION = 'renovation',
+}

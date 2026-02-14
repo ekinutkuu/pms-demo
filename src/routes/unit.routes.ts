@@ -6,9 +6,9 @@ import { CreateAvailabilityBlockSchema } from '../schemas/availability.schema';
 
 const router = Router();
 
-// POST /units/:unitId/availability
+// POST /units/:unitId/availability/close
 router.post(
-    '/:unitId/availability',
+    '/:unitId/availability/close',
     accountScope,
     validateResource(CreateAvailabilityBlockSchema),
     availabilityController.createBlock as import('express').RequestHandler

@@ -1,10 +1,13 @@
 import { z } from 'zod';
+import { AvailabilityBlockSource } from '../constants';
+
+const availabilityBlockSourceValues = Object.values(AvailabilityBlockSource) as [string, ...string[]];
 
 export const CreateAvailabilityBlockSchema = z.object({
     body: z.object({
         start_date: z.string().datetime().transform((str) => new Date(str)),
         end_date: z.string().datetime().transform((str) => new Date(str)),
-        reason: z.string().optional(),
+        source: z.enum(availabilityBlockSourceValues).optional(),
     }).refine((data) => data.end_date > data.start_date, {
         message: "End date must be after start date",
         path: ["end_date"],

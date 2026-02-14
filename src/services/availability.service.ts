@@ -21,7 +21,7 @@ export const createBlock = async (
             throw new NotFoundError('Unit not found or does not belong to this account');
         }
 
-        const { start_date, end_date, reason } = data;
+        const { start_date, end_date, source } = data;
         const overlapQuery = getOverlapQuery(start_date, end_date);
 
         // 2. Check for conflicts with existing Reservations
@@ -40,6 +40,7 @@ export const createBlock = async (
         const conflictingBlock = await AvailabilityBlock.findOne({
             unit_id: unitId,
             account_id: accountId,
+            deletedAt: { $exists: false },
             ...overlapQuery
         }).session(session);
 
@@ -53,7 +54,7 @@ export const createBlock = async (
             unit_id: unitId,
             start_date,
             end_date,
-            reason
+            source
         }], { session });
 
         await session.commitTransaction();
@@ -70,7 +71,7 @@ export const createBlock = async (
                 throw new NotFoundError('Unit not found or does not belong to this account');
             }
 
-            const { start_date, end_date, reason } = data;
+            const { start_date, end_date, source } = data;
             const overlapQuery = getOverlapQuery(start_date, end_date);
 
             // 2. Check for conflicts with existing Reservations
@@ -89,6 +90,7 @@ export const createBlock = async (
             const conflictingBlock = await AvailabilityBlock.findOne({
                 unit_id: unitId,
                 account_id: accountId,
+                deletedAt: { $exists: false },
                 ...overlapQuery
             });
 
@@ -102,7 +104,7 @@ export const createBlock = async (
                 unit_id: unitId,
                 start_date,
                 end_date,
-                reason
+                source
             });
             return block;
         }

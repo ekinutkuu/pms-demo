@@ -6,12 +6,12 @@ Bu dosya, müsaitlik blokları ile ilgili HTTP isteklerini karşılayan ve uygun
 ## Fonksiyonlar / Handlerlar
 
 ### About `createBlock`
-`POST /units/:unitId/availability` isteğini karşılar.
+`POST /units/:unitId/availability/close` isteğini karşılar.
 
 - **Amaç**: İstemciden gelen blok oluşturma isteğini alıp `AvailabilityService`'e iletmek ve sonucu döndürmek.
 - **Girdi**:
   - `req.params.unitId`: URL'den gelen birim ID.
-  - `req.body`: `start_date`, `end_date`, `reason`.
+  - `req.body`: `start_date`, `end_date`, `source`.
   - `req.context.accountId`: Middleware tarafından sağlanan tenant ID.
 - **Çıktı**:
   - Başarılı durumda `201 Created` ve oluşturulan blok verisi.

@@ -22,7 +22,7 @@ describe('Reservation Service - Conflict Detection', () => {
 
     afterAll(async () => {
         console.log("Disconnecting Mongoose...");
-        await mongoose.disconnect();
+        await mongoose.connection.close();
         await replSet.stop();
         console.log("Disconnected Mongoose");
     });

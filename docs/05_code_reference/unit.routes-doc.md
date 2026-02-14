@@ -5,7 +5,7 @@ Bu dosya, birim ("unit") ile ilgili endpoint'lerin tanımlandığı router dosya
 
 ## Endpoint'ler
 
-### `POST /units/:unitId/availability`
+### `POST /units/:unitId/availability/close`
 Belirtilen birimin belirli tarihlerde müsaitliğini kapatır ( availability block oluşturur ).
 
 - **Middleware**:

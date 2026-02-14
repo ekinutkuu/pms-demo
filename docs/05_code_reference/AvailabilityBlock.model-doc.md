@@ -10,7 +10,7 @@ Bu dosya, bir `Unit` (birim) için belirli tarih aralıklarının rezervasyona k
 - `unit_id` (ObjectId, required): Bloğun ait olduğu birim. `Unit` modeline referans verir.
 - `start_date` (Date, required): Bloğun başlangıç tarihi ve saati.
 - `end_date` (Date, required): Bloğun bitiş tarihi ve saati.
-- `reason` (String, optional): Bloğun oluşturulma nedeni (örneğin "Bakım", "Temizlik").
+- `source` (String, optional): Bloğun kaynağı (örneğin "ownerBlocked").
 - `deletedAt` (Date, optional): Soft delete mekanizması için silinme tarihi.
 - `createdAt` / `updatedAt`: Otomatik zaman damgaları.
 

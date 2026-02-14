@@ -6,12 +6,12 @@ Bu dosya, müsaitlik bloğu oluşturma istekleri için Zod validasyon şemaları
 ## Şemalar
 
 ### `CreateAvailabilityBlockSchema`
-`POST /units/:unitId/availability` isteği için validasyon kuralları.
+`POST /units/:unitId/availability/close` isteği için validasyon kuralları.
 
 - **Body**:
   - `start_date` (string -> Date): ISO 8601 formatında olmalı.
   - `end_date` (string -> Date): ISO 8601 formatında olmalı.
-  - `reason` (string, optional): Bloklama nedeni.
+  - `source` (enum, optional): Bloklama kaynağı. Geçerli değerler: `ownerBlocked`, `maintenance`, `renovation`.
 - **Params**:
   - `unitId` (string): Boş olamaz.
 
