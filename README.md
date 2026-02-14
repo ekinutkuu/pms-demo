@@ -29,6 +29,7 @@ Projeyi yerel ortamınızda çalıştırmak için aşağıdaki adımları izleyi
 
 #### MongoDB Replica Set Kurulumu (Local)
 Transaction (oturum) yapısının çalışabilmesi için MongoDB'nin **Replica Set** modunda çalışması gerekir:
+*Transaction yapısı "Double Booking Prevention" için kullanılır.
 
 1.  Mevcut MongoDB servisini veya işlemini durdurun. (Yönetici yetkili PowerShell'de `net stop MongoDB` komutunu çalıştırın)
 2.  `mongod` servisini `--replSet` bayrağı ile başlatın (ilgili konumda klasör mevcut olmalı):
@@ -207,3 +208,11 @@ API şu standart durum kodlarını kullanır:
 *   `404 Not Found`: Kaynak bulunamadı (Birim veya rezervasyon yok).
 *   `409 Conflict`: Çakışma (Örn. tarihlerde başka bir rezervasyon var).
 *   `500 Internal Server Error`: Sunucu taraflı beklenmeyen hata.
+
+## TODO:
+
+Task kapsamında istenen bonus özelliklerden bazıları yapılmamıştır.
+
+- Login / Logout logic with **JWT**
+- **Unit tests** (Although some tests have been performed, other test structures still need to be implemented)
+- **Rate limiting middleware**
